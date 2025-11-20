@@ -1,17 +1,15 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"os"
-	"strconv"
+	"local-go/fileops"
 )
 
 const accountBalanceFile = "balance.txt"
 
 func main() {
 	// Load initial balance from file
-	accountBalance, err := getFloatFromFile(accountBalanceFile)
+	accountBalance, err := fileops.GetFloatFromFile(accountBalanceFile)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -42,7 +40,7 @@ func main() {
 			}
 
 			accountBalance += deposit
-			writeValueToFile(accountBalance)
+			fileops.WriteValueToFile(accountBalance,accountBalanceFile)
 			fmt.Println("✅ Your new balance:", accountBalance)
 
 		case 3:
@@ -61,7 +59,7 @@ func main() {
 			}
 
 			accountBalance -= withdrawal
-			writeValueToFile(accountBalance)
+			fileops.WriteValueToFile(accountBalance,accountBalanceFile)
 			fmt.Println("💰 Your balance after withdrawal:", accountBalance)
 
 		case 4:
@@ -74,23 +72,4 @@ func main() {
 	}
 }
 
-func writeValueToFile(value float32) {
-	valueText := fmt.Sprint(value)
-	os.WriteFile(accountBalanceFile, []byte(valueText), 0644)
-}
 
-func getFloatFromFile(fileName string) (float32, error) {
-	data, err := os.ReadFile(fileName)
-	if err != nil {
-		return 1000, errors.New("No stored balance found, starting with 1000")
-	}
-
-	valueText := string(data)
-
-	value, err := strconv.ParseFloat(valueText, 64)
-	if err != nil {
-		return 1000, errors.New("Failed to parse stored value")
-	}
-
-	return float32(value), nil
-}
